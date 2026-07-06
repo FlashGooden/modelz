@@ -2,7 +2,7 @@ import subprocess
 
 import pytest
 
-from modelz.errors import InputValidationError
+from modelz.errors import InputValidationError, StageFailedError
 from modelz.pipeline import stage0_prep
 
 
@@ -49,3 +49,10 @@ def test_extract_audio_creates_file_with_audio_stream(tiny_video, tmp_path):
         capture_output=True, text=True,
     )
     assert "audio" in probe.stdout
+
+
+def test_extract_audio_raises_stage_failed_error_on_ffmpeg_failure(not_a_video, tmp_path):
+    dest = tmp_path / "out" / "audio.aac"
+
+    with pytest.raises(StageFailedError):
+        stage0_prep.extract_audio(not_a_video, dest)

@@ -1,10 +1,12 @@
 import subprocess
 from pathlib import Path
 
-from ..errors import InputValidationError
+from ..errors import InputValidationError, StageFailedError
 
 
 def _is_readable_media(path: Path) -> bool:
+    # ffprobe reports a still image as a single-frame video stream,
+    # so this same check works for both images and videos.
     result = subprocess.run(
         [
             "ffprobe", "-v", "error", "-select_streams", "v:0",
@@ -31,8 +33,14 @@ def validate_video(path: Path) -> None:
 
 def extract_audio(driving_video: Path, dest: Path) -> Path:
     dest.parent.mkdir(parents=True, exist_ok=True)
-    subprocess.run(
-        ["ffmpeg", "-y", "-i", str(driving_video), "-vn", "-acodec", "aac", str(dest)],
-        capture_output=True, check=True,
-    )
+    try:
+        subprocess.run(
+            ["ffmpeg", "-y", "-i", str(driving_video), "-vn", "-acodec", "aac", str(dest)],
+            capture_output=True, check=True,
+        )
+    except subprocess.CalledProcessError as exc:
+        raise StageFailedError(
+            f"Failed to extract audio from {driving_video}: "
+            f"{exc.stderr.decode(errors='replace') if exc.stderr else exc}"
+        ) from exc
     return dest
