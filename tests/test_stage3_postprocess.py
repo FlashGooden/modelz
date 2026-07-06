@@ -29,3 +29,13 @@ def test_mux_raises_stage_failed_error_on_ffmpeg_failure(not_a_video, tmp_path):
 
     with pytest.raises(StageFailedError):
         stage3_postprocess.mux(not_a_video, dest)
+
+
+def test_mux_raises_stage_failed_error_when_ffmpeg_missing(tiny_video, tmp_path, monkeypatch):
+    def fake_run(*args, **kwargs):
+        raise FileNotFoundError("ffmpeg not found")
+
+    monkeypatch.setattr(subprocess, "run", fake_run)
+
+    with pytest.raises(StageFailedError):
+        stage3_postprocess.mux(tiny_video, tmp_path / "out" / "final.mp4")

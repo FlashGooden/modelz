@@ -56,3 +56,23 @@ def test_extract_audio_raises_stage_failed_error_on_ffmpeg_failure(not_a_video, 
 
     with pytest.raises(StageFailedError):
         stage0_prep.extract_audio(not_a_video, dest)
+
+
+def test_validate_image_raises_input_validation_error_when_ffprobe_missing(tiny_image, monkeypatch):
+    def fake_run(*args, **kwargs):
+        raise FileNotFoundError("ffprobe not found")
+
+    monkeypatch.setattr(subprocess, "run", fake_run)
+
+    with pytest.raises(InputValidationError):
+        stage0_prep.validate_image(tiny_image)
+
+
+def test_extract_audio_raises_stage_failed_error_when_ffmpeg_missing(tiny_video, tmp_path, monkeypatch):
+    def fake_run(*args, **kwargs):
+        raise FileNotFoundError("ffmpeg not found")
+
+    monkeypatch.setattr(subprocess, "run", fake_run)
+
+    with pytest.raises(StageFailedError):
+        stage0_prep.extract_audio(tiny_video, tmp_path / "audio.aac")

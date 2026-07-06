@@ -16,4 +16,9 @@ def mux(src: Path, dest: Path) -> Path:
         raise StageFailedError(
             f"Failed to mux {src} to {dest}: {exc.stderr.decode(errors='replace') if exc.stderr else exc}"
         ) from exc
+    except FileNotFoundError as exc:
+        raise StageFailedError(
+            "ffmpeg was not found on PATH. Install ffmpeg (e.g. `brew install ffmpeg` "
+            "on macOS) — see README.md Prerequisites."
+        ) from exc
     return dest
