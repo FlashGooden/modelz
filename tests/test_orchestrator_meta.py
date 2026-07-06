@@ -30,13 +30,13 @@ def test_mark_stage_sets_status_and_extra_fields():
     meta = {"stages": {"motion": {"status": "pending"}}}
 
     orchestrator.mark_stage(
-        meta, "motion", "done", output="foo.mp4", model="zsxkib/mimic-motion"
+        meta, "motion", "done", output="foo.mp4", model="wan-video/wan-2.2-animate-replace"
     )
 
     assert meta["stages"]["motion"] == {
         "status": "done",
         "output": "foo.mp4",
-        "model": "zsxkib/mimic-motion",
+        "model": "wan-video/wan-2.2-animate-replace",
     }
 
 

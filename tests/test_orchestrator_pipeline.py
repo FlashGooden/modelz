@@ -81,7 +81,7 @@ def test_resume_skips_already_done_motion_stage(tiny_image, tiny_video, monkeypa
     meta = orchestrator.load_meta("jobC")
     orchestrator.mark_stage(meta, "prep", "done", audio=str(jdir / "audio.aac"))
     orchestrator.mark_stage(
-        meta, "motion", "done", output=str(existing_motion), model="zsxkib/mimic-motion"
+        meta, "motion", "done", output=str(existing_motion), model="wan-video/wan-2.2-animate-replace"
     )
     orchestrator.save_meta("jobC", meta)
 

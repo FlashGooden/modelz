@@ -20,7 +20,7 @@ def test_run_calls_replicate_client_with_expected_inputs(tmp_path):
 
     mock_run.assert_called_once_with(
         stage1_motion.MODEL_ID,
-        {"appearance_image": appearance_image, "motion_video": motion_video},
+        {"character_image": appearance_image, "video": motion_video},
     )
     mock_download.assert_called_once_with("https://replicate.delivery/motion.mp4", dest)
     assert result == dest

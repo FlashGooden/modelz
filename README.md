@@ -3,8 +3,9 @@
 A local CLI that generates a realistic full-body avatar video from a photo and a
 driving video, using Replicate-hosted models:
 
-1. **Stage 1 — body motion transfer** (`zsxkib/mimic-motion`): animates the avatar
-   photo to match the driving video's motion.
+1. **Stage 1 — body motion transfer** (`wan-video/wan-2.2-animate-replace`): animates
+   the avatar photo to match the driving video's motion, with relighting so the
+   result doesn't look pasted-in.
 2. **Stage 2 — lip-sync** (`bytedance/latentsync`): syncs the driving video's audio
    to the animated avatar's mouth movements.
 
@@ -21,8 +22,9 @@ re-run (and re-pay for) Stage 1.
 
 1. Create an account at replicate.com and enable billing under
    [replicate.com/account/billing](https://replicate.com/account/billing) — model
-   runs cost money per generation (Stage 1 ~$0.98/run, Stage 2 ~$0.08/run at time
-   of writing).
+   runs cost money per generation (Stage 1 cost varies with resolution/duration,
+   roughly $0.20-1.50/run; Stage 2 ~$0.08/run at time of writing — check current
+   pricing on each model's Replicate page before running).
 2. Generate an API token at
    [replicate.com/account/api-tokens](https://replicate.com/account/api-tokens).
 3. Install dependencies:
