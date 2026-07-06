@@ -128,6 +128,32 @@ def test_motion_stage_failure_marks_meta_and_raises(tiny_image, tiny_video, monk
     assert meta["stages"]["motion"]["status"] == "failed"
 
 
+def test_lipsync_stage_failure_marks_meta_and_raises(tiny_image, tiny_video, monkeypatch):
+    monkeypatch.setenv("REPLICATE_API_TOKEN", "r8_test")
+
+    def fake_motion(appearance_image, motion_video, dest):
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        dest.write_bytes(b"motion")
+        return dest
+
+    with patch(
+        "modelz.orchestrator.stage1_motion.run", side_effect=fake_motion
+    ), patch(
+        "modelz.orchestrator.stage2_lipsync.run", side_effect=RuntimeError("lipsync boom")
+    ):
+        with pytest.raises(StageFailedError):
+            orchestrator.run_pipeline(
+                avatar_image=tiny_image,
+                driving_video=tiny_video,
+                job_id="jobF",
+                out_path=None,
+                dry_run=False,
+            )
+
+    meta = orchestrator.load_meta("jobF")
+    assert meta["stages"]["lipsync"]["status"] == "failed"
+
+
 def test_postprocess_stage_failure_marks_meta_and_raises(tiny_image, tiny_video, monkeypatch):
     monkeypatch.setenv("REPLICATE_API_TOKEN", "r8_test")
 

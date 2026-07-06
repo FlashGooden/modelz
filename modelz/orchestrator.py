@@ -1,4 +1,5 @@
 import json
+import shutil
 import time
 import uuid
 from pathlib import Path
@@ -113,8 +114,7 @@ def run_pipeline(
         save_meta(job_id, meta)
 
     if out_path:
-        import shutil
-
+        out_path.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy(final_path, out_path)
         return out_path
     return final_path
