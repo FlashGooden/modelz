@@ -3,7 +3,7 @@ import sys
 from pathlib import Path
 
 from . import orchestrator
-from .errors import ModelzError
+from .errors import ModelzError, StageFailedError
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -34,11 +34,12 @@ def main(argv=None) -> int:
         )
     except ModelzError as exc:
         print(f"error: {exc}", file=sys.stderr)
-        print(
-            f"resume with: modelz generate --avatar {args.avatar} "
-            f"--driving {args.driving} --resume {job_id}",
-            file=sys.stderr,
-        )
+        if isinstance(exc, StageFailedError):
+            print(
+                f"resume with: modelz generate --avatar {args.avatar} "
+                f"--driving {args.driving} --resume {job_id}",
+                file=sys.stderr,
+            )
         return 1
 
     print(f"job_id={job_id}")

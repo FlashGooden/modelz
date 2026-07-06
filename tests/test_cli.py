@@ -2,7 +2,7 @@ from pathlib import Path
 from unittest.mock import patch
 
 from modelz import cli
-from modelz.errors import StageFailedError
+from modelz.errors import ConfigError, StageFailedError
 
 
 def test_build_parser_requires_avatar_and_driving():
@@ -43,3 +43,18 @@ def test_main_failure_prints_error_and_resume_hint(capsys):
     captured = capsys.readouterr()
     assert "Stage 1 (motion) failed: boom" in captured.err
     assert "--resume job456" in captured.err
+
+
+def test_main_config_error_has_no_resume_hint(capsys):
+    with patch(
+        "modelz.cli.orchestrator.new_job_id", return_value="job789"
+    ), patch(
+        "modelz.cli.orchestrator.run_pipeline",
+        side_effect=ConfigError("REPLICATE_API_TOKEN is not set."),
+    ):
+        exit_code = cli.main(["generate", "--avatar", "a.jpg", "--driving", "d.mp4"])
+
+    assert exit_code == 1
+    captured = capsys.readouterr()
+    assert "REPLICATE_API_TOKEN is not set." in captured.err
+    assert "resume with" not in captured.err
