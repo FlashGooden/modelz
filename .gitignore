@@ -1,1 +1,6 @@
 .superpowers/
+.env
+jobs/
+__pycache__/
+*.pyc
+.venv/
